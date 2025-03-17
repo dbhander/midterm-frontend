@@ -114,27 +114,31 @@
   }
 
   function renderQuestionBank(questions) {
-      const container = document.getElementById('questionBank');
-      container.innerHTML = questions.map(question => `
-          <div class="col-12 mb-3">
-              <div class="card question-card ${selectedQuestions.includes(question.id) ? 'selected' : ''}"
-                   data-id="${question.id}"
-                   onclick="toggleQuestion(${question.id})">
-                  ${selectedQuestions.includes(question.id) ?
-                      `<div class="selected-count">${selectedQuestions.indexOf(question.id) + 1}</div>` : ''}
-                  <img src="https://midterm-backend-inae.onrender.com/questions/${question.id}/image"
-                       class="card-img-top"
-                       style="height: 150px; object-fit: contain;">
-                  <div class="card-body">
-                      <h5>${question.description}</h5>
-                      <ul>${question.choices.map(c => `<li>${c}</li>`).join('')}</ul>
-                  </div>
-              </div>
-          </div>
-      `).join('');
-  }
+    if (Array.isArray(questions)) {
+        const container = document.getElementById('questionBank');
+        container.innerHTML = questions.map(question => `
+            <div class="col-12 mb-3">
+                <div class="card question-card ${selectedQuestions.includes(question.id) ? 'selected' : ''}"
+                     data-id="${question.id}"
+                     onclick="toggleQuestion(${question.id})">
+                    ${selectedQuestions.includes(question.id) ?
+                        `<div class="selected-count">${selectedQuestions.indexOf(question.id) + 1}</div>` : ''}
+                    <img src="https://localhost:8080/questions/${question.id}/image"
+                         class="card-img-top"
+                         style="height: 150px; object-fit: contain;">
+                    <div class="card-body">
+                        <h5>${question.description}</h5>
+                        <ul>${question.choices.map(c => `<li>${c}</li>`).join('')}</ul>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        console.error("Question bank is undefined or not an array");
+    }
+}
 
-  function toggleQuestion(questionId) {
+function toggleQuestion(questionId) {
       const index = selectedQuestions.indexOf(questionId);
       const card = document.querySelector(`.question-card[data-id="${questionId}"]`);
 
