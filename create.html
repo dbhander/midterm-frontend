@@ -104,14 +104,18 @@
   let selectedQuestions = [];
 
   async function loadQuestions() {
-      try {
-          const response = await fetch('https://midterm-backend-inae.onrender.com/questions');
-          const questions = await response.json();
-          renderQuestionBank(questions);
-      } catch (error) {
-          console.error('Error loading questions:', error);
-      }
-  }
+    try {
+        const response = await fetch('https://midterm-backend-inae.onrender.com/questions');
+        const questions = await response.json();
+        if (Array.isArray(questions)) {
+            renderQuestionBank(questions);
+        } else {
+            console.error("Questions data is not an array:", questions);
+        }
+    } catch (error) {
+        console.error('Error loading questions:', error);
+    }
+}
 
   function renderQuestionBank(questions) {
       const container = document.getElementById('questionBank');
