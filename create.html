@@ -104,18 +104,14 @@
   let selectedQuestions = [];
 
   async function loadQuestions() {
-    try {
-        const response = await fetch('https://midterm-backend-inae.onrender.com/questions');
-        const questions = await response.json();
-        if (Array.isArray(questions)) {
-            renderQuestionBank(questions);
-        } else {
-            console.error("Questions data is not an array:", questions);
-        }
-    } catch (error) {
-        console.error('Error loading questions:', error);
-    }
-}
+      try {
+          const response = await fetch('https://midterm-backend-inae.onrender.com/questions');
+          const questions = await response.json();
+          renderQuestionBank(questions);
+      } catch (error) {
+          console.error('Error loading questions:', error);
+      }
+  }
 
   function renderQuestionBank(questions) {
       const container = document.getElementById('questionBank');
@@ -188,49 +184,42 @@
   }
 
   async function saveQuiz() {
-        if (selectedQuestions.length === 0) {
-            alert('Please select at least one question!');
-            return;
-        }
-
-        const quizTitle = document.getElementById('quizTitle').value.trim();
-        if (!quizTitle) {
-            alert('Please enter a quiz title!');
-            return;
-        }
-
-        const payload = {
-            title: quizTitle,
-            questionIds: selectedQuestions
-        };
-
-        try {
-            const response = await fetch('https://midterm-backend-inae.onrender.com/quizzes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-                localStorage.removeItem('quizDraft');
-                const createAnother = confirm('Quiz saved successfully!\n\nWould you like to create another quiz?');
-
-                if (createAnother) {
-                    selectedQuestions = [];
-                    document.getElementById('quizTitle').value = '';
-                    renderQuestionBank();
-                    renderSelectedQuestions();
-                    updateSelectionCount();
-                } else {
-                    window.location.href = 'take.html';
-                }
-            }
-        } catch (error) {
-            console.error('Error saving quiz:', error);
-            alert('Failed to save quiz. Check console for details.');
-        }
+    if (selectedQuestions.length === 0) {
+        return;
     }
-    let draftData = JSON.parse(localStorage.getItem('quizDraft')) || {};
+
+    const quizTitle = document.getElementById('quizTitle').value.trim();
+    if (!quizTitle) {
+        return;
+    }
+
+    const payload = {
+        title: quizTitle,
+        questionIds: selectedQuestions
+    };
+
+    try {
+        const response = await fetch('https://midterm-backend-inae.onrender.com/quizzes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            localStorage.removeItem('quizDraft');
+            selectedQuestions = [];
+            document.getElementById('quizTitle').value = '';
+            renderQuestionBank();
+            renderSelectedQuestions();
+            updateSelectionCount();
+            window.location.href = 'take.html';
+        }
+    } catch (error) {
+        console.error('Error saving quiz:', error);
+    }
+}
+
+let draftData = JSON.parse(localStorage.getItem('quizDraft')) || {};
 
 function saveDraft() {
     const draft = {
