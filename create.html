@@ -183,18 +183,14 @@
       }
   }
 
-  async function saveQuiz() {
-    if (selectedQuestions.length === 0) {
-        return;
-    }
-
-    const quizTitle = document.getElementById('quizTitle').value.trim();
-    if (!quizTitle) {
+async function saveQuiz() {
+    if (selectedQuestions.length === 0 || !document.getElementById('quizTitle').value.trim()) {
+        console.error('Quiz title or questions are missing');
         return;
     }
 
     const payload = {
-        title: quizTitle,
+        title: document.getElementById('quizTitle').value.trim(),
         questionIds: selectedQuestions
     };
 
@@ -209,10 +205,11 @@
             localStorage.removeItem('quizDraft');
             selectedQuestions = [];
             document.getElementById('quizTitle').value = '';
-            renderQuestionBank();
+            await loadQuestions(); // Reload questions to reset the question bank
             renderSelectedQuestions();
             updateSelectionCount();
-            window.location.href = 'take.html';
+        } else {
+            console.error('Failed to save quiz:', await response.text());
         }
     } catch (error) {
         console.error('Error saving quiz:', error);
